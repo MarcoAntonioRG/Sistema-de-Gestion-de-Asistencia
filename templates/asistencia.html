@@ -1,0 +1,63 @@
+<!-- templates/asistencia.html -->
+{% extends "base.html" %}
+
+{% block title %}Registros de Asistencia{% endblock %}
+
+{% block content %}
+<h1>Registros de Asistencia</h1>
+
+{% if hay_asistencia %}
+    <h2>Filtrar Registros de Asistencia</h2>
+    <form action="{{ url_for('attendance.obtener_asistencia') }}" method="GET">
+        <label for="id_trabajador">ID Trabajador:</label>
+        <input type="text" id="id_trabajador" name="id_trabajador">
+
+        <label for="fecha">Fecha:</label>
+        <input type="date" id="fecha" name="fecha">
+
+        <label for="hora">Hora:</label>
+        <input type="time" id="hora" name="hora">
+
+        <button type="submit">Filtrar</button>
+    </form>
+
+    <!-- Botón para exportar los registros filtrados -->
+    <a href="{{ url_for('attendance.exportar_asistencia') }}">
+        <button type="button">Exportar Asistencia</button>
+    </a>
+{% endif %}
+
+{% if asistencia %}
+    <!-- Tabla de asistencia -->
+    <table>
+        <thead>
+            <tr>
+                <th>ID Reloj</th>
+                <th>Tipo de Marcaje</th>
+                <th>ID Trabajador</th>
+                <th>Hora</th>
+                <th>Minuto</th>
+                <th>Dia</th>
+                <th>Mes</th>
+                <th>Año</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for registro in asistencia %}
+            <tr>
+                <td>{{ registro['id_reloj'] }}</td>
+                <td>{{ registro['tipo_marcaje'] }}</td>
+                <td>{{ registro['id_empleado'] }}</td>
+                <td>{{ registro['hora'] }}</td>
+                <td>{{ registro['minuto'] }}</td>
+                <td>{{ registro['dia'] }}</td>
+                <td>{{ registro['mes'] }}</td>
+                <td>{{ registro['anio'] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No hay registros de asistencia disponibles.</p>
+{% endif %}
+{% endblock %}

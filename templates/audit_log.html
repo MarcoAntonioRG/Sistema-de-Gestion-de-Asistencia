@@ -1,0 +1,60 @@
+<!-- templates/audit_log.html -->
+{% extends "base.html" %}
+
+{% block title %}Registro de Auditoría{% endblock %}
+
+{% block content %}
+<h2>Registro de Auditoría</h2>
+
+<!-- Filtros de búsqueda (opcional) -->
+<form method="get" action="{{ url_for('show_audit_logs.show_audit_log') }}">
+    <label for="usuario">Usuario:</label>
+    <input type="text" id="usuario" name="usuario" value="{{ request.args.get('usuario', '') }}">
+    
+    <label for="fecha_inicio">Fecha Inicio:</label>
+    <input type="date" id="fecha_inicio" name="fecha_inicio" value="{{ request.args.get('fecha_inicio', '') }}">
+    
+    <label for="fecha_fin">Fecha Fin:</label>
+    <input type="date" id="fecha_fin" name="fecha_fin" value="{{ request.args.get('fecha_fin', '') }}">
+    
+    <button type="submit">Filtrar</button>
+</form>
+
+<hr>
+
+<!-- Tabla de registros de auditoría -->
+<table border="1" cellpadding="10" cellspacing="0">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Usuario</th>
+            <th>Acción</th>
+            <th>Detalles</th>
+            <th>Fecha y Hora</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% if logs_with_index|length > 0 %}
+            {% for idx, log in logs_with_index %}
+                <tr>
+                    <td>{{ idx }}</td>
+                    <td>{{ log.usuario }}</td>
+                    <td>{{ log.accion }}</td>
+                    <td>{{ log.detalles }}</td>
+                    <td>{{ log.fecha_hora.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                </tr>
+            {% endfor %}
+        {% else %}
+            <tr>
+                <td colspan="5">No hay registros de auditoría disponibles.</td>
+            </tr>
+        {% endif %}
+    </tbody>
+</table>
+
+<!-- Botón para generar un PDF (opcional) -->
+<form method="get" action="{{ url_for('show_audit_logs.show_audit_log_pdf') }}" target="_blank">
+    <button type="submit">Generar PDF</button>
+</form>
+
+{% endblock %}

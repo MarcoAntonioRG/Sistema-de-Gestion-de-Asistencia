@@ -1,0 +1,75 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Página Inicial - Gestión de Asistencia</title>
+    <!-- Vinculando el CSS de Bootswatch Yeti -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootswatch@5.1.3/dist/yeti/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="my-4 text-center">Sistema de Gestión de Asistencia</h1>
+
+      <!-- Formulario para subir archivo -->
+      <div class="card mb-4">
+        <div class="card-body">
+          <h2 class="card-title">Subir Archivo de Asistencia</h2>
+          <form
+            action="{{ url_for('upload_file.cargar_archivo') }}"
+            method="POST"
+            enctype="multipart/form-data"
+          >
+            <div class="mb-3">
+              <label for="file" class="form-label">Seleccionar archivo:</label>
+              <input
+                type="file"
+                id="file"
+                name="file"
+                class="form-control"
+                required
+              />
+            </div>
+            <button type="submit" class="btn btn-primary">Subir Archivo</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Botón para obtener datos de asistencia -->
+      <div class="card mb-4">
+        <div class="card-body">
+          <h2 class="card-title">Ver Registros de Asistencia</h2>
+          <form
+            action="{{ url_for('attendance.obtener_asistencia') }}"
+            method="GET"
+          >
+            <button type="submit" class="btn btn-success">
+              Obtener Asistencia
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Botón para ver los registros de auditoría -->
+      <div class="card mb-4">
+        <div class="card-body">
+          <h2 class="card-title">Ver Registros de Auditoría</h2>
+          <form
+            action="{{ url_for('show_audit_logs.show_audit_log') }}"
+            method="GET"
+          >
+            <button type="submit" class="btn btn-info">Ver Auditoría</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

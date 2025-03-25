@@ -1,0 +1,28 @@
+services:
+  app:
+    build: .
+    ports:
+      - "4000:4000"
+    volumes:  # Solo en ambiente de desarrollo
+      - .:/app
+    env_file:
+      - .flaskenv
+      - .env
+
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: asistencia_db
+    volumes: # Persistir datos
+      - db_data:/var/lib/postgresql/data
+
+  adminer:
+    image: adminer
+    ports:
+      - 8080:8080
+
+volumes:
+  db_data:

@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block title %}Registros de Asistencia{% endblock %}
+
+{% block content %}
+<h2>Resolver Inconsistencias de Asistencia</h2>
+
+<!-- Formulario de filtro -->
+<form method="get" action="{{ url_for('inconsistencies.mostrar_inconsistencias') }}">
+    <label for="fecha_inicio">Fecha Inicio:</label>
+    <input type="date" id="fecha_inicio" name="fecha_inicio">
+    <label for="fecha_fin">Fecha Fin:</label>
+    <input type="date" id="fecha_fin" name="fecha_fin">
+    <button type="submit">Filtrar</button>
+</form>
+
+<hr>
+
+<form action="{{ url_for('inconsistencies.resolver_inconsistencias') }}" method="post" id="form-inconsistencias">
+    {% for inconsistencia in inconsistencias %}
+        <h3>Empleado {{ inconsistencia.id_empleado }} - Fecha: {{ inconsistencia.fecha }}</h3>
+        
+        {% if inconsistencia.tipo_inconsistencia == "entradas_a_revisar" %}
+            <p><strong>Entradas duplicadas detectadas:</strong></p>
+            {% for idx, entrada in enumerate(inconsistencia.duplicados) %}
+                <!-- Opción para conservar como entrada -->
+                <div>
+                    <input type="checkbox" 
+                            name="entrada_conservar_{{ inconsistencia.id_empleado }}_{{ inconsistencia.fecha }}"
+                            value="conservar_{{ idx }}" 
+                            class="entrada-checkbox conservar" 
+                            data-empleado="{{ inconsistencia.id_empleado }}" 
+                            data-fecha="{{ inconsistencia.fecha }}"
+                            data-hora="{{ idx }}">
+                    Conservar como entrada: {{ entrada.hora }}:{{ entrada.minuto }}
+                </div>
+                <!-- Opción para convertir a salida -->
+                <div>
+                    <input type="checkbox" 
+                            name="entrada_convertir_{{ inconsistencia.id_empleado }}_{{ inconsistencia.fecha }}" 
+                            value="convertir_{{ idx }}" 
+                            class="entrada-checkbox convertir" 
+                            data-empleado="{{ inconsistencia.id_empleado }}" 
+                            data-fecha="{{ inconsistencia.fecha }}"
+                            data-hora="{{ idx }}">
+                    Convertir a salida: {{ entrada.hora }}:{{ entrada.minuto }}
+                </div>
+            {% endfor %}
+        
+        {% elif inconsistencia.tipo_inconsistencia == "salidas_a_revisar" %}
+            <p><strong>Salidas duplicadas detectadas:</strong></p>
+            {% for idx, salida in enumerate(inconsistencia.duplicados) %}
+                <!-- Opción para conservar como salida -->
+                <div>
+                    <input type="checkbox" 
+                            name="salida_conservar_{{ inconsistencia.id_empleado }}_{{ inconsistencia.fecha }}" 
+                            value="conservar_{{ idx }}" 
+                            class="salida-checkbox conservar" 
+                            data-empleado="{{ inconsistencia.id_empleado }}" 
+                            data-fecha="{{ inconsistencia.fecha }}"
+                            data-hora="{{ idx }}">
+                    Conservar como salida: {{ salida.hora }}:{{ salida.minuto }}
+                </div>
+                <!-- Opción para convertir a entrada -->
+                <div>
+                    <input type="checkbox" 
+                            name="salida_convertir_{{ inconsistencia.id_empleado }}_{{ inconsistencia.fecha }}" 
+                            value="convertir_{{ idx }}" 
+                            class="salida-checkbox convertir" 
+                            data-empleado="{{ inconsistencia.id_empleado }}" 
+                            data-fecha="{{ inconsistencia.fecha }}"
+                            data-hora="{{ idx }}">
+                    Convertir a entrada: {{ salida.hora }}:{{ salida.minuto }}
+                </div>
+            {% endfor %}
+        
+        {% elif inconsistencia.tipo_inconsistencia == "falta_salida" %}
+            <p><strong>Falta una salida para este registro:</strong></p>
+            <p>Entrada registrada: {{ inconsistencia.entrada_faltante.hora }}:{{ inconsistencia.entrada_faltante.minuto }}</p>
+            <label for="salida_definida_{{ inconsistencia.id_empleado }}_{{ inconsistencia.fecha }}">Definir hora de salida:</label>
+            <input type="time" name="salida_definida_{{ inconsistencia.id_empleado }}_{{ inconsistencia.fecha }}" required>
+        
+        {% elif inconsistencia.tipo_inconsistencia == "falta_entrada" %}
+            <p><strong>Falta una entrada para este registro:</strong></p>
+            <p>Salida registrada: {{ inconsistencia.salida_faltante.hora }}:{{ inconsistencia.salida_faltante.minuto }}</p>
+            <label for="entrada_definida_{{ inconsistencia.id_empleado }}_{{ inconsistencia.fecha }}">Definir hora de entrada:</label>
+            <input type="time" name="entrada_definida_{{ inconsistencia.id_empleado }}_{{ inconsistencia.fecha }}" required>
+        {% endif %}
+        
+        <hr>
+    {% endfor %}
+    <button type="submit">Guardar Selección</button>
+</form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Obtener todos los checkboxes del formulario
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+
+        checkboxes.forEach(function (checkbox) {
+            checkbox.addEventListener('change', function () {
+                const empleado = this.dataset.empleado; // ID del empleado
+                const fecha = this.dataset.fecha;       // Fecha del registro
+                const hora = this.dataset.hora;         // Hora específica del checkbox
+                
+                const grupoRelacionado = document.querySelectorAll(
+                    `input[data-empleado="${empleado}"][data-fecha="${fecha}"]`
+                );
+
+                if (this.checked) {
+                    if (this.classList.contains('conservar')) {
+                        // Deshabilitar la opción "convertir" para la misma hora
+                        grupoRelacionado.forEach((cb) => {
+                            if (cb.dataset.hora === hora && cb.classList.contains('convertir')) {
+                                cb.disabled = true;
+                            }
+                        });
+
+                        // Deshabilitar la opción "conservar" para otras horas
+                        grupoRelacionado.forEach((cb) => {
+                            if (cb.dataset.hora !== hora && cb.classList.contains('conservar')) {
+                                cb.disabled = true;
+                            }
+                        });
+                    } else if (this.classList.contains('convertir')) {
+                        // Deshabilitar la opción "conservar" para la misma hora
+                        grupoRelacionado.forEach((cb) => {
+                            if (cb.dataset.hora === hora && cb.classList.contains('conservar')) {
+                                cb.disabled = true;
+                            }
+                        });
+
+                        // Deshabilitar la opción "convertir" para otras horas
+                        grupoRelacionado.forEach((cb) => {
+                            if (cb.dataset.hora !== hora && cb.classList.contains('convertir')) {
+                                cb.disabled = true;
+                            }
+                        });
+                    }
+                } else {
+                    // Habilitar opciones previamente deshabilitadas si se desmarca el checkbox
+                    grupoRelacionado.forEach((cb) => {
+                        cb.disabled = false;
+                    });
+                }
+            });
+        });
+    });
+</script>
+
+{% endblock %}
