@@ -4,7 +4,7 @@ Aplicación web que funciona como "Middleware" y que permite subir el registro d
 
 # Como ejecutar
 
-1. Ejecutar contenedor con:
+1. La aplicación se ejecuta con Docker para ello utilizamos el siguiente comando:
     
         docker compose up -d
 
