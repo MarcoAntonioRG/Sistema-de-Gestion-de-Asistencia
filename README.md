@@ -19,7 +19,7 @@ Microservicio de gestión de asistencia de una aplicación web.
 Para ejecutar la aplicación es necesario tener instalado en tu máquina local:
 
 - Docker para la ejecución de todo el microservicio.
-- Postman para utilizar y verificar las rutas de la API.
+- Postman para utilizar y verificar las rutas de la aplicación.
 
 ---
 
