@@ -2,8 +2,6 @@
 
 Microservicio de gestión de asistencia de una aplicación web.
 
----
-
 ## Tecnologías Usadas
 
 - Python
@@ -12,8 +10,6 @@ Microservicio de gestión de asistencia de una aplicación web.
 - Docker
 - Postman
 
----
-
 ## Requisitos Técnicos
 
 Para ejecutar la aplicación es necesario tener instalado en tu máquina local:
@@ -21,13 +17,9 @@ Para ejecutar la aplicación es necesario tener instalado en tu máquina local:
 - Docker para la ejecución de todo el microservicio.
 - Postman para utilizar y verificar las rutas de la aplicación.
 
----
-
 ## Descripción
 
 Aplicación web que funciona como "Middleware" y que permite subir el registro de asistencia de trabajadores obtenido del marcaje en reloj, en el cual se pueden corregir inconsistencias o errores de marcaje encontrados para así "limpiar" estos datos que luego son utilizados para el cálculo de horas trabajadas y la remuneración respectiva.
-
----
 
 ## Pasos para ejecutar
 
